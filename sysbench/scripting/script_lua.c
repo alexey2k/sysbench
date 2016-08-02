@@ -371,9 +371,12 @@ lua_State *sb_lua_new_state(const char *scriptname, int thread_id)
   lua_State      *state;
   sb_lua_ctxt_t  *ctxt;
   sb_list_item_t *pos;
+  sb_list_item_t *pos_val;
   option_t       *opt;
   char           *tmp;
-
+  char           *val;
+  int            i;
+  
   state = luaL_newstate();
   
   luaL_openlibs(state);
@@ -402,8 +405,20 @@ lua_State *sb_lua_new_state(const char *scriptname, int thread_id)
         lua_pushstring(state, tmp ? tmp : "");
         break;
       case SB_ARG_TYPE_LIST:
-        /*FIXME: should be exported as tables */
-        lua_pushnil(state);
+
+        lua_newtable(state);
+        SB_LIST_FOR_EACH(pos_val, &opt->values);
+        pos_val = SB_LIST_ITEM_NEXT(pos_val);
+        i=1;
+        while (pos_val != sb_get_value_list(opt->name))
+        {
+          val = SB_LIST_ENTRY(pos_val, value_t, listitem)->data;
+          lua_pushnumber(state, i);
+          lua_pushstring(state, val);
+          lua_rawset(state, -3);
+          pos_val = SB_LIST_ITEM_NEXT(pos_val);
+          i++;
+        }        
         break;
       case SB_ARG_TYPE_FILE:
         /* FIXME: no need to export anything */
@@ -576,6 +591,7 @@ static void sb_lua_db_init_once(void)
 int sb_lua_db_connect(lua_State *L)
 {
   sb_lua_ctxt_t *ctxt;
+  char tid_host[15];
   
   ctxt = sb_lua_get_context(L);
 
@@ -590,6 +606,11 @@ int sb_lua_db_connect(lua_State *L)
   if (ctxt->con == NULL)
     luaL_error(L, "Failed to connect to the database");
   db_set_thread(ctxt->con, ctxt->thread_id);
+
+  lua_pushstring(L, ctxt->con->host);
+
+  sprintf(tid_host,"tid_%d_host",ctxt->thread_id);
+  lua_setglobal(L, tid_host);
   
   return 0;
 }

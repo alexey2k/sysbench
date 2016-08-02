@@ -407,6 +407,10 @@ int mysql_drv_connect(db_conn_t *sb_conn)
   }
   pthread_mutex_unlock(&pos_mutex);
 
+
+  //propagate host name to lua
+  sb_conn->host=db_mysql_con->host;
+
   db_mysql_con->user = args.user;
   db_mysql_con->password = args.password;
   db_mysql_con->db = args.db;

@@ -5,12 +5,38 @@ dofile(pathtest .. "common.lua")
 function thread_init(thread_id)
    set_vars()
 
+   query_comment=""
+
+   if (oltp_proxy_table_per_host) 
+   then
+      host_id= math.mod(thread_id,oltp_proxy_hosts)+1
+      oltp_hosts= oltp_proxy_hosts
+      query_comment="/*conn".. host_id-1 .."*/ "
+   end
+
+   if (oltp_table_per_host) then
+      host_id=hosts[_G["tid_"..thread_id.."_host"]]
+   end
+               
+   if (oltp_proxy_table_per_host or oltp_table_per_host) then
+
+      range_max=host_id * oltp_tables_count/oltp_hosts
+      range_min=(host_id-1)  * oltp_tables_count/oltp_hosts + 1
+      --print("here1.1: host:" .. host_id .. " min:" .. range_min .. " max ".. range_max .. " mysql host" .. oltp_hosts)
+   else
+      range_min=1
+      range_max=oltp_tables_count
+   end                                        
+
+   --print ("Thread_id: "..thread_id .. "conn_id" .. conn_id)
+
+
    if (((db_driver == "mysql") or (db_driver == "attachsql")) and mysql_table_engine == "myisam") then
       begin_query = "LOCK TABLES sbtest WRITE"
       commit_query = "UNLOCK TABLES"
    else
-      begin_query = "BEGIN"
-      commit_query = "COMMIT"
+      begin_query ="BEGIN".. query_comment
+      commit_query ="COMMIT".. query_comment
    end
 
 end
@@ -29,7 +55,12 @@ function event(thread_id)
    local pad_val
    local query
 
-   table_name = "sbtest".. sb_rand_uniform(1, oltp_tables_count)
+   if (oltp_table_per_host or oltp_proxy_table_per_host) then
+     table_name = query_comment .."sbtest".. sb_rand_uniform(range_min, range_max)
+   else
+     table_name = query_comment .."sbtest".. sb_rand_uniform(1, oltp_tables_count)
+   end   
+
    if not oltp_skip_trx then
       db_query(begin_query)
    end
@@ -72,6 +103,8 @@ function event(thread_id)
       end
    end
 
+   if oltp_test_mode then
+
    i = sb_rand(1, oltp_table_size)
 
    rs = db_query("DELETE FROM " .. table_name .. " WHERE id=" .. i)
@@ -82,6 +115,7 @@ function event(thread_id)
 ###########-###########-###########-###########-###########]])
 
    rs = db_query("INSERT INTO " .. table_name ..  " (id, k, c, pad) VALUES " .. string.format("(%d, %d, '%s', '%s')",i, sb_rand(1, oltp_table_size) , c_val, pad_val))
+   end -- oltp_test_mode
 
    end -- oltp_read_only
 

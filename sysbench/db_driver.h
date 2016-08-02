@@ -214,6 +214,8 @@ typedef struct db_conn
   unsigned int    bulk_commit_max;   /* Maximum value of uncommitted rows */
   int             thread_id;         /* Assiciated thread id (required to collect per-thread stats */
   db_result_set_t rs;                /* Result set */
+  char *          host;              /* Host */
+
 } db_conn_t;
 
 typedef enum {

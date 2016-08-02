@@ -151,4 +151,41 @@ function set_vars()
       oltp_skip_trx = false
    end
 
+
+   if (oltp_table_per_host == 'on') then
+      oltp_table_per_host = true
+   else
+      oltp_table_per_host = false
+   end
+
+   if (oltp_proxy_table_per_host == 'on') then
+      oltp_proxy_table_per_host = true
+
+      if (oltp_proxy_hosts == ''  or oltp_proxy_hosts == nil) then
+        print ("When oltp_proxy_table_per_host=on one need to specify number of the proxy backend servers with oltp_proxy_hosts=<N>")
+        os.exit()
+      end
+
+   else
+      oltp_proxy_table_per_host = false
+   end
+
+   if (oltp_test_mode == 'nontrx') then
+         oltp_test_mode = false
+   else
+        oltp_test_mode=true   
+   end
+      
+                     
+
+   if (oltp_table_per_host) then
+     hosts={}
+     for idx,host in pairs(mysql_host) do  
+     hosts[host]=idx  
+     --print ("host" .. host .. "  idx " .. idx) 
+     end
+  
+     oltp_hosts=#mysql_host                             
+   end
+
 end
