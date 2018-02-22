@@ -41,6 +41,11 @@ typedef enum {
   SB_CNT_RECONNECT,     /* reconnects */
   SB_CNT_BYTES_READ,    /* bytes read */
   SB_CNT_BYTES_WRITTEN, /* bytes written */
+  SB_CNT_1,
+  SB_CNT_2,
+  SB_CNT_3,
+  SB_CNT_4,
+  SB_CNT_5,
   SB_CNT_MAX
 } sb_counter_type_t;
 

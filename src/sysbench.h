@@ -108,6 +108,12 @@ typedef struct {
   uint64_t bytes_read;          /* Bytes read */
   uint64_t bytes_written;       /* Bytes written */
 
+  uint64_t cnt1;
+  uint64_t cnt2;
+  uint64_t cnt3;
+  uint64_t cnt4;  
+  uint64_t cnt5;
+
   uint64_t queue_length;        /* Event queue length (tx_rate-only) */
   uint64_t concurrency;         /* Number of in-flight events (tx_rate-only) */
 } sb_stat_t;

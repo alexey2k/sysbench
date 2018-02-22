@@ -219,6 +219,12 @@ static void report_get_common_stat(sb_stat_t *stat, sb_counters_t cnt)
   stat->reconnects =    cnt[SB_CNT_RECONNECT];
   stat->bytes_read =    cnt[SB_CNT_BYTES_READ];
   stat->bytes_written = cnt[SB_CNT_BYTES_WRITTEN];
+  
+  stat->cnt1 =          cnt[SB_CNT_1];
+  stat->cnt2 =          cnt[SB_CNT_2];  
+  stat->cnt3 =          cnt[SB_CNT_3];
+  stat->cnt4 =          cnt[SB_CNT_4];
+  stat->cnt5 =          cnt[SB_CNT_5];
 
   stat->time_total = NS2SEC(sb_timer_value(&sb_exec_timer)) -
     sb_globals.warmup_time;

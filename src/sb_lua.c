@@ -1015,6 +1015,11 @@ static void stat_to_lua_table(lua_State *L, sb_stat_t *stat)
   stat_to_number(other);
   stat_to_number(errors);
   stat_to_number(reconnects);
+  stat_to_number(cnt1);  
+  stat_to_number(cnt2);  
+  stat_to_number(cnt3);  
+  stat_to_number(cnt4);
+  stat_to_number(cnt5);
 }
 
 /* Call sysbench.hooks.report_intermediate */
