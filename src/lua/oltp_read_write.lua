@@ -55,9 +55,11 @@ function event()
       execute_distinct_ranges()
    end
 
-   execute_index_updates()
-   execute_non_index_updates()
-   execute_delete_inserts()
+   if not sysbench.opt.read_only then
+     execute_index_updates()
+     execute_non_index_updates()
+     execute_delete_inserts()
+   end
 
    if not sysbench.opt.skip_trx then
       commit()

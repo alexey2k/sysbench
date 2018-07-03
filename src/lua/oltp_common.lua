@@ -55,6 +55,8 @@ sysbench.cmdline.options = {
       {"Number of DELETE/INSERT combinations per transaction", 1},
    range_selects =
       {"Enable/disable all range SELECT queries", true},
+   read_only =
+      {"Read only workload", false},      
    auto_inc =
    {"Use AUTO_INCREMENT column as Primary Key (for MySQL), " ..
        "or its alternatives in other DBMS. When disabled, use " ..
